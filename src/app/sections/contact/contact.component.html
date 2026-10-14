@@ -1,0 +1,209 @@
+@let t = i18n.t();
+<section id="contact" class="section" aria-labelledby="contact-title">
+  <div class="container grid">
+    <!-- Contact details -->
+    <div class="info">
+      <app-section-heading [eyebrow]="t.contact.eyebrow" [title]="t.contact.title" [intro]="t.contact.intro" headingId="contact-title" />
+
+      <div class="card">
+        <h3><app-icon name="phone" [size]="20" /> {{ t.contact.phonesTitle }}</h3>
+        <ul class="phones">
+          @for (phone of company.phones; track phone.display) {
+            <li>
+              <a [href]="tel(phone)" [attr.aria-label]="t.a11y.callNumber + ' ' + phone.display">
+                <span class="num" dir="ltr">{{ phone.display }}</span>
+                <span class="kind">{{ phoneLabel(phone) }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <dl class="details">
+        <div>
+          <dt><app-icon name="user" [size]="20" /> {{ t.contact.representative }}</dt>
+          <dd>{{ i18n.pick(company.representative) }}</dd>
+        </div>
+        <div>
+          <dt><app-icon name="pin" [size]="20" /> {{ t.contact.address }}</dt>
+          <dd>
+            <address>{{ i18n.pick(company.address) }}</address>
+            <a class="inline-link" [href]="company.mapUrl" target="_blank" rel="noopener">
+              <app-icon name="map" [size]="16" /> {{ t.contact.openMap }}
+              <span class="visually-hidden">{{ t.a11y.opensNewTab }}</span>
+            </a>
+          </dd>
+        </div>
+        <div>
+          <dt><app-icon name="facebook" [size]="20" /> {{ t.contact.facebook }}</dt>
+          <dd>
+            <a class="inline-link" [href]="company.facebookUrl" target="_blank" rel="noopener">
+              {{ t.contact.facebookCta }} <span class="visually-hidden">{{ t.a11y.opensNewTab }}</span>
+            </a>
+            @if (company.qrCodes.facebook) {
+              <img class="qr" [src]="company.qrCodes.facebook" alt="Facebook QR" width="120" height="120" loading="lazy" />
+            }
+          </dd>
+        </div>
+        @if (company.whatsapp) {
+          <div>
+            <dt><app-icon name="whatsapp" [size]="20" /> {{ t.contact.whatsapp }}</dt>
+            <dd>
+              <a class="inline-link" [href]="waChatUrl" target="_blank" rel="noopener">
+                <span dir="ltr">{{ waDisplay }}</span>
+                <span class="visually-hidden">{{ t.a11y.opensNewTab }}</span>
+              </a>
+            </dd>
+          </div>
+        }
+      </dl>
+    </div>
+
+    <!-- Inquiry form -->
+    <div class="form-card">
+      <h3 class="form-title">{{ t.form.title }}</h3>
+      <p class="notice" role="note">
+        <app-icon name="info" [size]="18" />
+        <span>{{ t.form.notice }} @if (usesWhatsapp) { {{ t.form.whatsapp.notice }} }</span>
+      </p>
+
+      @switch (status()) {
+        @case ('success') {
+          <div #statusPanel class="state success" role="status" tabindex="-1">
+            <span class="state-icon"><app-icon name="check" [size]="28" /></span>
+            <h4>{{ t.form.success.title }}</h4>
+            <p>{{ t.form.success.body }}</p>
+            <button type="button" class="btn btn-navy" (click)="reset()">{{ t.form.newInquiry }}</button>
+          </div>
+        }
+        @case ('whatsapp') {
+          <div #statusPanel class="state whatsapp" role="status" tabindex="-1">
+            <span class="state-icon"><app-icon name="whatsapp" [size]="30" /></span>
+            <h4>{{ t.form.whatsapp.title }}</h4>
+            <p>{{ t.form.whatsapp.body }}</p>
+            <pre class="summary">{{ summary() }}</pre>
+            <div class="state-actions">
+              <a class="btn btn-wa" [href]="waUrl()" target="_blank" rel="noopener">
+                <app-icon name="whatsapp" [size]="18" /> {{ t.form.whatsapp.open }}
+                <span class="visually-hidden">{{ t.a11y.opensNewTab }}</span>
+              </a>
+              <button type="button" class="btn btn-outline" (click)="copySummary()">
+                <app-icon [name]="copied() ? 'check' : 'copy'" [size]="18" />
+                {{ copied() ? t.form.offline.copied : t.form.offline.copy }}
+              </button>
+              <button type="button" class="btn btn-outline" (click)="reset()">{{ t.form.newInquiry }}</button>
+            </div>
+            <span class="visually-hidden" aria-live="polite">{{ copied() ? t.form.offline.copied : '' }}</span>
+          </div>
+        }
+        @case ('not-configured') {
+          <div #statusPanel class="state offline" role="status" tabindex="-1">
+            <span class="state-icon"><app-icon name="info" [size]="28" /></span>
+            <h4>{{ t.form.offline.title }}</h4>
+            <p>{{ t.form.offline.body }}</p>
+            <pre class="summary">{{ summary() }}</pre>
+            <div class="state-actions">
+              <button type="button" class="btn btn-gold" (click)="copySummary()">
+                <app-icon [name]="copied() ? 'check' : 'copy'" [size]="18" />
+                {{ copied() ? t.form.offline.copied : t.form.offline.copy }}
+              </button>
+              <a class="btn btn-navy" [href]="tel(company.phones[1])">
+                <app-icon name="phone" [size]="18" /> <span dir="ltr">{{ company.phones[1].display }}</span>
+              </a>
+              <button type="button" class="btn btn-outline" (click)="reset()">{{ t.form.newInquiry }}</button>
+            </div>
+            <span class="visually-hidden" aria-live="polite">{{ copied() ? t.form.offline.copied : '' }}</span>
+          </div>
+        }
+        @default {
+          <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="status() === 'submitting'">
+            <p class="hint">{{ t.form.requiredHint }}</p>
+
+            @if (status() === 'error') {
+              <div #statusPanel class="alert error" role="alert" tabindex="-1">
+                <strong>{{ t.form.error.title }}</strong>
+                <span>{{ t.form.error.body }}</span>
+              </div>
+            }
+            @if (submitted() && form.invalid) {
+              <div #errorSummary class="alert error" role="alert" tabindex="-1">{{ t.form.errors.summary }}</div>
+            }
+
+            <div class="fields">
+              <div class="field">
+                <label for="inq-name">{{ t.form.fields.name }} <span class="req" aria-hidden="true">*</span></label>
+                <input id="inq-name" type="text" formControlName="fullName" autocomplete="name" required
+                  [placeholder]="t.form.placeholders.name" [attr.aria-invalid]="showError('fullName')"
+                  [attr.aria-describedby]="describedBy('fullName')" />
+                @if (showError('fullName')) { <p class="error-text" id="err-fullName">{{ errorText('fullName') }}</p> }
+              </div>
+
+              <div class="field">
+                <label for="inq-phone">{{ t.form.fields.phone }} <span class="req" aria-hidden="true">*</span></label>
+                <input id="inq-phone" type="tel" formControlName="phone" autocomplete="tel" inputmode="tel" dir="ltr" required
+                  [placeholder]="t.form.placeholders.phone" [attr.aria-invalid]="showError('phone')"
+                  [attr.aria-describedby]="describedBy('phone')" />
+                @if (showError('phone')) { <p class="error-text" id="err-phone">{{ errorText('phone') }}</p> }
+              </div>
+
+              <div class="field">
+                <label for="inq-service">{{ t.form.fields.service }} <span class="req" aria-hidden="true">*</span></label>
+                <select id="inq-service" formControlName="service" required [attr.aria-invalid]="showError('service')"
+                  [attr.aria-describedby]="describedBy('service')">
+                  <option value="" disabled>{{ t.form.placeholders.service }}</option>
+                  @for (s of services; track s.id) {
+                    <option [value]="s.id">{{ i18n.pick(s.title) }}</option>
+                  }
+                  <option value="other">{{ t.form.otherService }}</option>
+                </select>
+                @if (showError('service')) { <p class="error-text" id="err-service">{{ errorText('service') }}</p> }
+              </div>
+
+              <div class="field">
+                <label for="inq-destination">{{ t.form.fields.destination }}</label>
+                <input id="inq-destination" type="text" formControlName="destination"
+                  [placeholder]="t.form.placeholders.destination" [attr.aria-invalid]="showError('destination')"
+                  [attr.aria-describedby]="describedBy('destination')" />
+                @if (showError('destination')) { <p class="error-text" id="err-destination">{{ errorText('destination') }}</p> }
+              </div>
+
+              <div class="field">
+                <label for="inq-travelers">{{ t.form.fields.travelers }} <span class="req" aria-hidden="true">*</span></label>
+                <input id="inq-travelers" type="number" formControlName="travelers" min="1" max="500" step="1" inputmode="numeric" required
+                  [attr.aria-invalid]="showError('travelers')" [attr.aria-describedby]="describedBy('travelers')" />
+                @if (showError('travelers')) { <p class="error-text" id="err-travelers">{{ errorText('travelers') }}</p> }
+              </div>
+
+              <div class="field">
+                <label for="inq-date">{{ t.form.fields.date }}</label>
+                <input id="inq-date" type="date" formControlName="preferredDate" [min]="minDate"
+                  [attr.aria-invalid]="showError('preferredDate')" [attr.aria-describedby]="describedBy('preferredDate')" />
+                @if (showError('preferredDate')) { <p class="error-text" id="err-preferredDate">{{ errorText('preferredDate') }}</p> }
+              </div>
+
+              <div class="field full">
+                <label for="inq-message">{{ t.form.fields.message }}</label>
+                <textarea id="inq-message" rows="4" formControlName="message" [attr.maxlength]="messageMax"
+                  [placeholder]="t.form.placeholders.message" [attr.aria-invalid]="showError('message')"
+                  [attr.aria-describedby]="describedBy('message', 'msg-count')"></textarea>
+                <p class="counter" id="msg-count">{{ charsLeft() }} {{ t.form.charsLeft }}</p>
+                @if (showError('message')) { <p class="error-text" id="err-message">{{ errorText('message') }}</p> }
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-gold btn-lg btn-block" [disabled]="status() === 'submitting'">
+              @if (status() === 'submitting') {
+                <span class="spinner" aria-hidden="true"></span> {{ t.form.submitting }}
+              } @else if (usesWhatsapp) {
+                <app-icon name="whatsapp" [size]="20" /> {{ t.form.whatsapp.submit }}
+              } @else {
+                {{ status() === 'error' ? t.form.error.retry : t.form.submit }}
+              }
+            </button>
+            <span class="visually-hidden" aria-live="polite">{{ status() === 'submitting' ? t.form.submitting : '' }}</span>
+          </form>
+        }
+      }
+    </div>
+  </div>
+</section>

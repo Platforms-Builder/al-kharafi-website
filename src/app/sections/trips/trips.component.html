@@ -1,0 +1,65 @@
+@let t = i18n.t();
+<section id="trips" class="section" aria-labelledby="trips-title">
+  <div class="container">
+    <app-section-heading [eyebrow]="t.trips.eyebrow" [title]="t.trips.title" [intro]="t.trips.intro" headingId="trips-title" />
+
+    @if (trips.length === 0) {
+      <div class="empty" appReveal>
+        <app-site-image class="empty-bg" key="karnak" sizes="100vw" [decorative]="true" [showBadge]="false" />
+        <div class="empty-body">
+          <span class="empty-icon"><app-icon name="calendar" [size]="30" /></span>
+          <h3>{{ t.trips.emptyTitle }}</h3>
+          <p>{{ t.trips.emptyBody }}</p>
+          <button type="button" class="btn btn-gold" (click)="inquire()">{{ t.trips.emptyCta }}</button>
+        </div>
+      </div>
+    } @else {
+      @if (showingSamples) {
+        <p class="dev-banner" role="note"><app-icon name="info" [size]="18" /> {{ t.trips.sampleBanner }}</p>
+      }
+      <ul class="cards">
+        @for (trip of trips; track trip.id) {
+          <li class="card" [class.is-full]="trip.availability === 'full'" appReveal>
+            <div class="media">
+              <app-site-image [key]="trip.image" sizes="(max-width: 700px) 100vw, (max-width: 1100px) 50vw, 25vw" />
+              <span class="status" [attr.data-status]="trip.availability">{{ t.trips.status[trip.availability] }}</span>
+              @if (trip.sample) {
+                <span class="sample">{{ t.common.sample }}</span>
+              }
+            </div>
+            <div class="body">
+              <h3>{{ i18n.pick(trip.destination) }}</h3>
+              <p class="desc">{{ i18n.pick(trip.description) }}</p>
+              <dl class="meta">
+                <div>
+                  <dt><app-icon name="calendar" [size]="16" /> {{ t.trips.date }}</dt>
+                  <dd>{{ trip.date ? formatDate(trip.date) : t.trips.dateTbd }}</dd>
+                </div>
+                <div>
+                  <dt><app-icon name="clock" [size]="16" /> {{ t.trips.duration }}</dt>
+                  <dd>{{ trip.duration ? i18n.pick(trip.duration) : t.trips.dateTbd }}</dd>
+                </div>
+                <div>
+                  <dt><app-icon name="tag" [size]="16" /> {{ t.trips.price }}</dt>
+                  <dd>
+                    @if (trip.sample && trip.price) {
+                      {{ t.trips.samplePrice }}
+                    } @else if (trip.price) {
+                      <span dir="ltr">{{ formatPrice(trip.price) }}</span>
+                    } @else {
+                      {{ t.trips.priceOnRequest }}
+                    }
+                  </dd>
+                </div>
+              </dl>
+              <button type="button" class="btn btn-navy btn-block" (click)="inquire(trip)">
+                {{ t.trips.cta }}
+                <span class="visually-hidden">: {{ i18n.pick(trip.destination) }}</span>
+              </button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>

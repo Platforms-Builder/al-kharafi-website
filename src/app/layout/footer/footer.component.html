@@ -1,0 +1,55 @@
+@let t = i18n.t();
+<footer class="footer">
+  <div class="container cols">
+    <div class="brand-col">
+      <img class="logo" [src]="company.logo.onDark" [alt]="company.shortName.ar + ' – ' + company.shortName.en" width="120" height="90" loading="lazy" />
+      <p class="name-ar" lang="ar" dir="rtl">{{ company.name.ar }}</p>
+      <p class="name-en" lang="en" dir="ltr">{{ company.name.en }} — {{ company.tagline.en }}</p>
+      <p class="about">{{ t.footer.about }}</p>
+      <a class="social" [href]="company.facebookUrl" target="_blank" rel="noopener">
+        <app-icon name="facebook" [size]="20" /> <span>Facebook</span>
+        <span class="visually-hidden">{{ t.a11y.opensNewTab }}</span>
+      </a>
+    </div>
+
+    <nav [attr.aria-label]="t.a11y.footerNav">
+      <h2>{{ t.footer.navTitle }}</h2>
+      <ul>
+        @for (section of sections; track section) {
+          <li><a [routerLink]="['/', i18n.lang()]" [fragment]="section">{{ t.nav[section] }}</a></li>
+        }
+        <li><a [routerLink]="['/', i18n.lang(), 'credits']">{{ t.footer.credits }}</a></li>
+      </ul>
+    </nav>
+
+    <div>
+      <h2>{{ t.footer.servicesTitle }}</h2>
+      <ul>
+        @for (s of services; track s.id) {
+          <li><a [routerLink]="['/', i18n.lang()]" fragment="services">{{ i18n.pick(s.title) }}</a></li>
+        }
+      </ul>
+    </div>
+
+    <div>
+      <h2>{{ t.footer.contactTitle }}</h2>
+      <ul class="phones">
+        @for (p of company.phones; track p.display) {
+          <li>
+            <a [href]="'tel:' + p.e164" [attr.aria-label]="t.a11y.callNumber + ' ' + p.display">
+              <app-icon name="phone" [size]="15" /> <span dir="ltr">{{ p.display }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+      <p class="addr"><app-icon name="pin" [size]="15" /> <span>{{ i18n.pick(company.address) }}</span></p>
+    </div>
+  </div>
+
+  <div class="bottom">
+    <div class="container bottom-inner">
+      <p lang="ar" dir="rtl">© {{ year }} {{ copyright.ar }}</p>
+      <p lang="en" dir="ltr">© {{ year }} {{ copyright.en }}</p>
+    </div>
+  </div>
+</footer>

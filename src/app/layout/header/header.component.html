@@ -1,0 +1,38 @@
+@let t = i18n.t();
+<a class="skip-link" href="#main" (click)="skipToMain($event)">{{ t.a11y.skipToContent }}</a>
+
+<div class="bar container">
+  <a class="brand" [routerLink]="['/', i18n.lang()]" fragment="home" [attr.aria-label]="t.a11y.homeLink" (click)="closeMenu()">
+    <img class="logo" [src]="company.logo.onDarkSmall" alt="" width="70" height="52" fetchpriority="high" />
+    <span class="brand-text">
+      <span class="brand-name">{{ i18n.pick(company.shortName) }}</span>
+      <span class="brand-tag">{{ i18n.pick(company.tagline) }}</span>
+    </span>
+  </a>
+
+  <nav class="nav" [class.open]="menuOpen()" id="main-nav" [attr.aria-label]="t.a11y.mainNav">
+    <ul>
+      @for (section of sections; track section) {
+        <li>
+          <a [routerLink]="['/', i18n.lang()]" [fragment]="section" [class.active]="active() === section"
+            [attr.aria-current]="active() === section ? 'location' : null" (click)="closeMenu()">{{ label(section) }}</a>
+        </li>
+      }
+    </ul>
+    <div class="nav-actions">
+      <button type="button" class="lang" (click)="switchLanguage()" [attr.lang]="i18n.otherLang()"
+        [attr.aria-label]="t.a11y.switchLanguage">
+        <app-icon name="globe" [size]="18" />
+        <span>{{ t.langSwitch.label }}</span>
+      </button>
+      <a class="btn btn-gold cta" [routerLink]="['/', i18n.lang()]" fragment="contact" (click)="closeMenu()">
+        {{ t.nav.cta }}
+      </a>
+    </div>
+  </nav>
+
+  <button #toggle type="button" class="menu-toggle" (click)="toggleMenu()" aria-controls="main-nav"
+    [attr.aria-expanded]="menuOpen()" [attr.aria-label]="menuOpen() ? t.a11y.closeMenu : t.a11y.openMenu">
+    <app-icon [name]="menuOpen() ? 'close' : 'menu'" [size]="24" />
+  </button>
+</div>

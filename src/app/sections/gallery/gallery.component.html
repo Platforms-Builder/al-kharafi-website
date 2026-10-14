@@ -1,0 +1,55 @@
+@let t = i18n.t();
+<section id="gallery" class="section soft" aria-labelledby="gallery-title">
+  <div class="container">
+    <app-section-heading [eyebrow]="t.gallery.eyebrow" [title]="t.gallery.title" [intro]="t.gallery.intro" headingId="gallery-title" />
+
+    <div class="filters" role="group" [attr.aria-label]="t.gallery.filterLabel">
+      @for (f of filters; track f) {
+        <button type="button" [class.active]="filter() === f" [attr.aria-pressed]="filter() === f" (click)="filter.set(f)">
+          {{ t.gallery.filters[f] }}
+        </button>
+      }
+    </div>
+
+    @if (items().length === 0) {
+      <p class="empty"><app-icon name="info" [size]="20" /> {{ t.gallery.emptyCompany }}</p>
+    } @else {
+      <ul class="grid" aria-live="polite">
+        @for (item of items(); track item.image; let i = $index) {
+          <li [class.wide]="i % 5 === 0">
+            <button type="button" class="tile" (click)="open(i, $event)">
+              <app-site-image [key]="item.image" sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw" [decorative]="true" />
+              <span class="visually-hidden">{{ t.a11y.enlarge }} {{ i18n.pick(image(item.image).alt) }}</span>
+              <span class="zoom" aria-hidden="true"><app-icon name="expand" [size]="20" /></span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</section>
+
+<dialog #dialog class="lightbox" (close)="onClosed()" (keydown)="onKey($event)" (click)="onDialogClick($event)"
+  [attr.aria-label]="t.gallery.title">
+  @if (current(); as img) {
+    <figure>
+      <div class="frame">
+        <img [ngSrc]="img.src" ngSrcset="800w, 1600w" sizes="90vw" [width]="img.width" [height]="img.height" [alt]="i18n.pick(img.alt)" />
+      </div>
+      <figcaption>
+        <span class="caption">{{ i18n.pick(img.alt) }}</span>
+        <span class="counter">{{ (openIndex() ?? 0) + 1 }} {{ t.gallery.of }} {{ items().length }}</span>
+        @if (img.illustrative && img.credit) {
+          <small>
+            {{ t.common.illustrativeLong }} — {{ t.gallery.credit }}
+            <a [href]="img.credit.source" target="_blank" rel="noopener">{{ img.credit.author }}</a>,
+            <a [href]="img.credit.licenseUrl" target="_blank" rel="noopener license">{{ img.credit.license }}</a>
+          </small>
+        }
+      </figcaption>
+    </figure>
+  }
+  <button type="button" class="ctrl close" (click)="close()" [attr.aria-label]="t.a11y.close"><app-icon name="close" [size]="24" /></button>
+  <button type="button" class="ctrl prev" (click)="move(-1)" [attr.aria-label]="t.a11y.previous"><app-icon name="chevron-left" [size]="28" [flip]="true" /></button>
+  <button type="button" class="ctrl next" (click)="move(1)" [attr.aria-label]="t.a11y.next"><app-icon name="chevron-right" [size]="28" [flip]="true" /></button>
+</dialog>

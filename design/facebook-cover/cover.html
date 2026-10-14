@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face{font-family:'Cairo';font-weight:600;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/cairo-arabic-600.woff2') format('woff2');}
+  @font-face{font-family:'Cairo';font-weight:700;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/cairo-arabic-600.woff2') format('woff2');}
+  @font-face{font-family:'Cairo';font-weight:800;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/cairo-arabic-600.woff2') format('woff2');}
+  @font-face{font-family:'Tajawal';font-weight:400;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/tajawal-arabic-400.woff2') format('woff2');}
+  @font-face{font-family:'Tajawal';font-weight:500;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/tajawal-arabic-500.woff2') format('woff2');}
+  @font-face{font-family:'Tajawal';font-weight:700;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/tajawal-arabic-700.woff2') format('woff2');}
+  @font-face{font-family:'Manrope';font-weight:400;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/manrope-latin-400.woff2') format('woff2');}
+  @font-face{font-family:'Tajawal-Latin';font-weight:500;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/tajawal-latin-500.woff2') format('woff2');}
+  @font-face{font-family:'Tajawal-Latin';font-weight:700;src:url('file:///work/projects/my-own/al-kharafi/al-kharafi-website/src/fonts/tajawal-latin-700.woff2') format('woff2');}
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --navy:#10243a; --navy-2:#1c3553; --gold:#c8a45d; --gold-2:#e2c98d;
+    --soft:#f5f3ee; --muted:#9fb0c3;
+  }
+  html,body{width:1640px;height:624px;overflow:hidden;background:var(--navy)}
+  .cover{position:relative;width:1640px;height:624px;overflow:hidden;
+    background:
+      radial-gradient(1100px 620px at 50% -12%, #24406a 0%, rgba(28,53,83,0) 62%),
+      radial-gradient(700px 520px at 12% 118%, rgba(200,164,93,.14) 0%, rgba(200,164,93,0) 60%),
+      linear-gradient(180deg,#0d1e31 0%, #10243a 46%, #0b1a2b 100%);
+  }
+  /* faint eagle watermark */
+  .wm{position:absolute;top:50%;left:50%;transform:translate(-50%,-46%);
+    height:1040px;opacity:.05;filter:brightness(1.5)}
+  /* hairlines */
+  .hair{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(200,164,93,0) 0%,rgba(200,164,93,.45) 50%,rgba(200,164,93,0) 100%)}
+  .hair.top{top:26px}
+  .hair.bot{bottom:26px}
+  /* corner brackets */
+  .corner{position:absolute;width:56px;height:56px;border:2px solid rgba(200,164,93,.75)}
+  .c-tl{top:26px;right:26px;border-left:0;border-bottom:0;border-top-right-radius:6px}
+  .c-tr{top:26px;left:26px;border-right:0;border-bottom:0;border-top-left-radius:6px}
+  .c-bl{bottom:26px;right:26px;border-left:0;border-top:0;border-bottom-right-radius:6px}
+  .c-br{bottom:26px;left:26px;border-right:0;border-top:0;border-bottom-left-radius:6px}
+
+  .content{position:absolute;inset:0;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;
+    padding:64px 0 96px;z-index:2}
+  .logo{height:96px;width:auto;display:block;margin-bottom:20px;
+    filter:drop-shadow(0 6px 18px rgba(0,0,0,.35))}
+  .eyebrow{font-family:'Tajawal',sans-serif;font-weight:500;font-size:20px;letter-spacing:6px;
+    color:var(--gold-2);opacity:.9;margin-bottom:14px}
+  h1{font-family:'Cairo',sans-serif;font-weight:800;font-size:92px;line-height:1.06;
+    color:#fff;letter-spacing:-1px;text-shadow:0 4px 24px rgba(0,0,0,.35)}
+  .tag{font-family:'Cairo',sans-serif;font-weight:600;font-size:34px;line-height:1.3;
+    color:var(--gold);margin-top:12px}
+  .divider{display:flex;align-items:center;gap:16px;margin:26px 0 22px;width:560px}
+  .divider span{flex:1;height:1px;background:linear-gradient(90deg,rgba(200,164,93,0),rgba(200,164,93,.7),rgba(200,164,93,0))}
+  .divider i{width:10px;height:10px;background:var(--gold);transform:rotate(45deg);border-radius:1px}
+  .en{font-family:'Tajawal-Latin',sans-serif;font-weight:500;font-size:22px;letter-spacing:3px;
+    color:#cdd8e6;text-transform:uppercase}
+  .en b{font-weight:700;color:#fff;letter-spacing:5px}
+
+  .strip{position:absolute;left:0;right:0;bottom:0;height:74px;z-index:3;
+    display:flex;align-items:center;justify-content:center;gap:34px;
+    background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.35));
+    font-family:'Tajawal',sans-serif;font-weight:500;font-size:23px;color:#e7edf5}
+  .strip .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .strip .phones{display:inline-flex;align-items:center;gap:12px;direction:ltr;unicode-bidi:isolate}
+  .strip .kb{color:var(--gold-2);font-weight:700;font-family:'Tajawal-Latin',sans-serif;
+    direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums;letter-spacing:.5px}
+  .strip .sep{color:var(--gold);opacity:.7}
+  .strip .fb{display:flex;align-items:center;gap:11px;font-family:'Tajawal-Latin',sans-serif;font-weight:500;letter-spacing:.5px}
+  .fbi{width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;
+    font-family:Georgia,serif;font-weight:700;font-size:21px;line-height:1;padding-top:2px}
+</style>
+</head>
+<body>
+  <div class="cover">
+    <img class="wm" src="file:///work/projects/my-own/al-kharafi/al-kharafi-website/public/brand/eagle-gold-400.webp">
+    <div class="hair top"></div>
+    <div class="hair bot"></div>
+    <div class="corner c-tl"></div>
+    <div class="corner c-tr"></div>
+    <div class="corner c-bl"></div>
+    <div class="corner c-br"></div>
+
+    <div class="content">
+      <img class="logo" src="file:///work/projects/my-own/al-kharafi/al-kharafi-website/public/brand/eagle-gold-400.webp">
+      <div class="eyebrow">سوهاج · مصر</div>
+      <h1>شركة الخارفي</h1>
+      <div class="tag">للاستثمار السياحي والنقل البري والرحلات</div>
+      <div class="divider"><span></span><i></i><span></span></div>
+      <div class="en"><b>AL-KHARAFI</b> &nbsp; Tourism Investment · Land Transport · Trips</div>
+    </div>
+
+    <div class="strip">
+      <span class="fb"><span class="fbi">f</span> صفحتنا على فيسبوك</span>
+      <span class="dot"></span>
+      <span class="phones">
+        <span class="kb" dir="ltr">0102 927 4903</span>
+        <span class="sep">|</span>
+        <span class="kb" dir="ltr">093 210 0091</span>
+      </span>
+      <span class="dot"></span>
+      <span>سوهاج – شارع مدرسة الزراعة – أبراج الجهاز المركزي</span>
+    </div>
+  </div>
+</body>
+</html>
