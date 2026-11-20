@@ -25,13 +25,16 @@ const alt = siteUrl
   ? langs.map((l) => `  <link rel="alternate" hreflang="${l}" href="${siteUrl}/${l}/">`).join('\n') +
     `\n  <link rel="alternate" hreflang="x-default" href="${siteUrl}/ar/">\n  <link rel="canonical" href="${siteUrl}/ar/">`
   : '';
+const verify = site.googleSiteVerification
+  ? `  <meta name="google-site-verification" content="${site.googleSiteVerification}">\n`
+  : '';
 writeFileSync(join(out, 'index.html'), `<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <title>الخارفي | Al-Kharafi</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="شركة الخارفي للاستثمار السياحي والنقل البري والرحلات – سوهاج. Al-Kharafi — Tourism Investment, Land Transport &amp; Trips, Sohag, Egypt. Overseas employment services.">
+${verify}  <meta name="description" content="شركة الخارفي للاستثمار السياحي والنقل البري والرحلات – سوهاج. Al-Kharafi — Tourism Investment, Land Transport &amp; Trips, Sohag, Egypt. Overseas employment services.">
 ${alt}
   <script>try{if(localStorage.getItem('alkharafi.lang')==='en'){location.replace('en/'+location.hash);}}catch(e){}</script>
   <meta http-equiv="refresh" content="0; url=ar/">
