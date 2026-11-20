@@ -1,0 +1,53 @@
+name: Deploy to Cloudflare Pages
+
+# Builds on GitHub and uploads to Cloudflare Pages with an API token, so the Cloudflare
+# account does not need access to this GitHub account.
+# Required repository secrets: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages
+  cancel-in-progress: true
+
+env:
+  PROJECT_NAME: al-kharafi
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - name: Check secrets
+        if: env.CLOUDFLARE_API_TOKEN == ''
+        run: echo "::warning::CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID secrets are not set — skipping Cloudflare deploy."
+      - uses: actions/checkout@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        run: npm ci
+      - if: env.CLOUDFLARE_API_TOKEN != ''
+        run: npm run build:cloudflare
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+      - name: Upload to Cloudflare Pages
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: '4'
+          # Creates the project on the first run (ignored if it already exists).
+          preCommands: npx wrangler pages project create ${{ env.PROJECT_NAME }} --production-branch=main || true
+          command: pages deploy dist/al-kharafi/browser --project-name=${{ env.PROJECT_NAME }} --branch=main --commit-dirty=true

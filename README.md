@@ -84,7 +84,16 @@ Put the original QR images in `public/brand/` and set `qrCodes.facebook / qrCode
 ### Cloudflare Pages (free `*.pages.dev` address) — primary hosting
 Production URL: **https://al-kharafi.pages.dev** (set in `site.config.json → siteUrl`; the GitHub Pages copy also points its canonical URLs there).
 
-One-time setup in the Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**:
+**Option A — deploy from GitHub Actions (used here; works when Cloudflare and GitHub are different accounts).**
+`.github/workflows/cloudflare-pages.yml` builds on every push to `main` and uploads with Wrangler; it creates the `al-kharafi` project on the first run.
+1. Cloudflare → **My Profile → API Tokens → Create Token → Custom token** with permission **Account → Cloudflare Pages → Edit** (for your account).
+2. Copy the **Account ID** (Cloudflare dashboard → Workers & Pages, right sidebar, or the URL `dash.cloudflare.com/<account-id>`).
+3. GitHub repo → **Settings → Secrets and variables → Actions → New repository secret**: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
+4. **Actions → Deploy to Cloudflare Pages → Run workflow** (or push to `main`).
+
+Do not also connect the repository with Git integration (Option B), or every push deploys twice.
+
+**Option B — Cloudflare Git integration** (only if the Cloudflare account can install its GitHub app on the repository owner). Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**:
 1. Authorise the Cloudflare GitHub app for the `Platforms-Builder` organisation and pick `al-kharafi-website`.
 2. Project name: `al-kharafi` (this gives `al-kharafi.pages.dev` — if you choose another name, update `siteUrl`).
 3. Build settings:
