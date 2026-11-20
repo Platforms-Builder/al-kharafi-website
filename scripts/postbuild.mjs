@@ -65,8 +65,31 @@ ${urls.join('\n')}
   console.warn('⚠ site.config.json → siteUrl is empty: canonical URLs and sitemap.xml were skipped.');
 }
 
-// 5. Custom domain for GitHub Pages.
-if (siteUrl && !/\.github\.io$/.test(new URL(siteUrl).hostname)) {
+// 5. Cloudflare Pages headers (ignored by GitHub Pages): long cache for hashed bundles,
+//    short cache for images, basic security headers.
+writeFileSync(join(out, '_headers'), `/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/media/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*
+  Cache-Control: public, max-age=604800
+
+/brand/*
+  Cache-Control: public, max-age=86400
+`);
+
+// 6. Custom domain for GitHub Pages (not for *.github.io / *.pages.dev).
+if (siteUrl && !/\.(github\.io|pages\.dev)$/.test(new URL(siteUrl).hostname)) {
   writeFileSync(join(out, 'CNAME'), new URL(siteUrl).hostname + '\n');
 }
 

@@ -81,6 +81,24 @@ Put the original QR images in `public/brand/` and set `qrCodes.facebook / qrCode
    - Site address: `https://<user>.github.io/<repo>/` (the workflow sets the correct base path automatically).
 4. The production URL (canonical URLs, hreflang links, absolute Open Graph images, `sitemap.xml`, robots.txt sitemap line) is filled in **automatically** by the workflow from the Pages address. To force a specific URL, set it in `site.config.json → siteUrl` or as a repository variable `SITE_URL` (**Settings → Secrets and variables → Actions → Variables**).
 
+### Cloudflare Pages (free `*.pages.dev` address) — primary hosting
+Production URL: **https://al-kharafi.pages.dev** (set in `site.config.json → siteUrl`; the GitHub Pages copy also points its canonical URLs there).
+
+One-time setup in the Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**:
+1. Authorise the Cloudflare GitHub app for the `Platforms-Builder` organisation and pick `al-kharafi-website`.
+2. Project name: `al-kharafi` (this gives `al-kharafi.pages.dev` — if you choose another name, update `siteUrl`).
+3. Build settings:
+   | Setting | Value |
+   |---|---|
+   | Production branch | `main` |
+   | Framework preset | None |
+   | Build command | `npm run build:cloudflare` |
+   | Build output directory | `dist/al-kharafi/browser` |
+   | Environment variable | `NODE_VERSION` = `22.22.3` |
+4. Save and Deploy. Every push to `main` then redeploys automatically; other branches get preview URLs.
+
+The build adds a `_headers` file (long cache for hashed JS/CSS/fonts, security headers). Unknown URLs are served `404.html`, which loads the app and redirects to the visitor's language. A custom domain can be added later under the project's **Custom domains** tab.
+
 ### Custom domain with Cloudflare
 Example below uses `example.com`; replace it with the real domain and `<user>` with the GitHub account/organisation (here: `tap-profile`).
 

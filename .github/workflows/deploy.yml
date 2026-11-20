@@ -33,14 +33,7 @@ jobs:
         env:
           SITE_URL: ${{ vars.SITE_URL }}
           PAGES_URL: ${{ steps.pages.outputs.base_url }}
-        run: |
-          node -e '
-            const fs = require("fs");
-            const cfg = JSON.parse(fs.readFileSync("site.config.json", "utf8"));
-            cfg.siteUrl = (process.env.SITE_URL || cfg.siteUrl || process.env.PAGES_URL || "").replace(/\/$/, "");
-            fs.writeFileSync("site.config.json", JSON.stringify(cfg, null, 2) + "\n");
-            console.log("siteUrl =", cfg.siteUrl);
-          '
+        run: node scripts/set-site-url.mjs
       # base_path is "" with a custom domain, or "/<repo>" for https://<user>.github.io/<repo>/
       - run: npx ng build --base-href "${{ steps.pages.outputs.base_path }}/"
       - run: node scripts/postbuild.mjs
