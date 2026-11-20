@@ -79,14 +79,35 @@ Put the original QR images in `public/brand/` and set `qrCodes.facebook / qrCode
 2. In the repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
 3. Every push to `main` runs `.github/workflows/deploy.yml`, which builds, prerenders and publishes the site.
    - Site address: `https://<user>.github.io/<repo>/` (the workflow sets the correct base path automatically).
-4. Put the final address in `site.config.json`:
-   ```json
-   { "siteUrl": "https://<user>.github.io/<repo>", "googleSiteVerification": "" }
-   ```
-   This turns on canonical URLs, hreflang links, absolute Open Graph images, `sitemap.xml` and the robots.txt sitemap line.
+4. The production URL (canonical URLs, hreflang links, absolute Open Graph images, `sitemap.xml`, robots.txt sitemap line) is filled in **automatically** by the workflow from the Pages address. To force a specific URL, set it in `site.config.json → siteUrl` or as a repository variable `SITE_URL` (**Settings → Secrets and variables → Actions → Variables**).
 
-### Custom domain (recommended)
-Set `"siteUrl": "https://www.your-domain.com"`. The build writes the `CNAME` file automatically. Then add the domain under **Settings → Pages → Custom domain** and point DNS to GitHub Pages (a `CNAME` record for `www` → `<user>.github.io`). Enable **Enforce HTTPS**.
+### Custom domain with Cloudflare
+Example below uses `example.com`; replace it with the real domain and `<user>` with the GitHub account/organisation (here: `tap-profile`).
+
+**1. Cloudflare → DNS → Records** (start with the proxy **off / grey cloud – "DNS only"**, so GitHub can issue its certificate):
+
+| Type | Name | Content |
+|---|---|---|
+| `A` | `@` | `185.199.108.153` |
+| `A` | `@` | `185.199.109.153` |
+| `A` | `@` | `185.199.110.153` |
+| `A` | `@` | `185.199.111.153` |
+| `CNAME` | `www` | `<user>.github.io` |
+
+(Optional IPv6: `AAAA @` → `2606:50c0:8000::153`, `…8001::153`, `…8002::153`, `…8003::153`.)
+Delete any other `A`/`AAAA`/`CNAME` records for `@` and `www` first.
+
+**2. GitHub → Settings → Pages → Custom domain:** enter `www.example.com` (or `example.com`) → Save. Wait for the DNS check to pass, then tick **Enforce HTTPS** (certificate can take up to ~1 hour).
+Optional but recommended: verify the domain under your **account/org Settings → Pages → Verified domains** (adds a `TXT` record in Cloudflare) to prevent domain takeover.
+
+**3. Re-run the deploy workflow** (**Actions → Deploy to GitHub Pages → Run workflow**) so the site is rebuilt for the root of the new domain (base path `/` instead of `/<repo>/`) and the sitemap/canonical URLs use the domain.
+
+**4. Turn the Cloudflare proxy on (orange cloud)** — optional, after HTTPS works on GitHub:
+- **SSL/TLS → Overview → mode: `Full (strict)`** (never `Flexible` — it causes an endless redirect loop with GitHub's HTTPS).
+- **SSL/TLS → Edge Certificates → Always Use HTTPS: On**.
+- If you later change the custom domain on GitHub, switch the records back to grey cloud until GitHub re-issues the certificate.
+
+The site is fully static (prerendered `/ar/`, `/en/`, a root language redirect and `404.html`), so no Cloudflare Workers, Page Rules or redirects are needed.
 
 ## 4. Search engines (SEO)
 
@@ -134,7 +155,7 @@ Routing: `/ar/…` and `/en/…`. The URL is the source of truth for the languag
 | Confirmed list of services and descriptions | Current five categories are marked as provisional on the site |
 | Real trips (destinations, dates, durations, prices, availability) | None published → section shows “ask about upcoming trips” |
 | Real photos of company coaches and trips | Site uses credited, clearly labelled illustrative photos |
-| Website domain / final URL | Needed for canonical, sitemap and Open Graph |
+| Website domain | Set in GitHub Pages + Cloudflare (see §3); the URL is picked up automatically by the build |
 | Email address, working hours | Not supplied — not shown |
 
 ## 7. Integrations still required
