@@ -39,9 +39,9 @@
       <figcaption>
         <span class="caption">{{ i18n.pick(img.alt) }}</span>
         <span class="counter">{{ (openIndex() ?? 0) + 1 }} {{ t.gallery.of }} {{ items().length }}</span>
-        @if (img.illustrative && img.credit) {
+        @if (img.credit) {
           <small>
-            {{ t.common.illustrativeLong }} — {{ t.gallery.credit }}
+            {{ t.gallery.credit }}
             <a [href]="img.credit.source" target="_blank" rel="noopener">{{ img.credit.author }}</a>,
             <a [href]="img.credit.licenseUrl" target="_blank" rel="noopener license">{{ img.credit.license }}</a>
           </small>

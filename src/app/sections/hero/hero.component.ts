@@ -12,7 +12,7 @@ import { SiteImageComponent } from '../../shared/site-image.component';
   template: `
     @let t = i18n.t();
     <section id="home" class="hero" aria-labelledby="hero-title">
-      <app-site-image class="bg" key="hero-road-dusk" [priority]="true" sizes="100vw" [showBadge]="false" />
+      <app-site-image class="bg" key="hero-road-dusk" [priority]="true" sizes="100vw" />
       <div class="overlay" aria-hidden="true"></div>
 
       <div class="container content">
@@ -32,7 +32,6 @@ import { SiteImageComponent } from '../../shared/site-image.component';
           }
         </ul>
       </div>
-      <span class="photo-note">{{ t.common.illustrative }}</span>
     </section>
   `,
   styleUrl: './hero.component.scss',

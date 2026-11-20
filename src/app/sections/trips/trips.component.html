@@ -5,7 +5,7 @@
 
     @if (trips.length === 0) {
       <div class="empty" appReveal>
-        <app-site-image class="empty-bg" key="karnak" sizes="100vw" [decorative]="true" [showBadge]="false" />
+        <app-site-image class="empty-bg" key="karnak" sizes="100vw" [decorative]="true" />
         <div class="empty-body">
           <span class="empty-icon"><app-icon name="calendar" [size]="30" /></span>
           <h3>{{ t.trips.emptyTitle }}</h3>

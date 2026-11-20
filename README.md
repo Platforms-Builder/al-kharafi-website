@@ -1,6 +1,6 @@
 # Al-Kharafi — Bilingual Tourism Website (Angular)
 
-**شركة الخارفي للاستثمار السياحي والنقل البري والرحلات** — Arabic (default, RTL) and English (LTR) website built with Angular 22, prerendered to static HTML for GitHub Pages and search engines.
+**شركة الخارفي للاستثمار السياحي والنقل البري والرحلات** — Arabic (default, RTL) and English (LTR) website built with Angular 22, prerendered to static HTML, hosted on Cloudflare Pages.
 
 ---
 
@@ -12,13 +12,13 @@ Requirements: **Node.js 22.22+** (or 24.15+). With nvm: `nvm install 22 && nvm u
 npm install
 npm start            # dev server → http://localhost:4200/ar
 npm run build        # production build → dist/al-kharafi/browser
-npm run build:gh-pages   # production build + GitHub Pages extras (404, robots, sitemap, CNAME)
+npm run build:cloudflare # production build + hosting extras (404, robots, sitemap, _headers)
 ```
 
 To preview the production output locally:
 
 ```bash
-npm run build:gh-pages
+npm run build:cloudflare
 npx http-server dist/al-kharafi/browser -p 8080   # or: python3 -m http.server -d dist/al-kharafi/browser 8080
 ```
 
@@ -73,68 +73,28 @@ The source was a 563 px JPEG. When the original vector/high-resolution logo is a
 ### QR codes
 Put the original QR images in `public/brand/` and set `qrCodes.facebook / qrCodes.location` in `company.data.ts`.
 
-## 3. Deploy to GitHub Pages
+## 3. Deploy (Cloudflare Pages)
 
-1. Create a GitHub repository and push **the contents of this folder** to the `main` branch.
-2. In the repository: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. Every push to `main` runs `.github/workflows/deploy.yml`, which builds, prerenders and publishes the site.
-   - Site address: `https://<user>.github.io/<repo>/` (the workflow sets the correct base path automatically).
-4. The production URL (canonical URLs, hreflang links, absolute Open Graph images, `sitemap.xml`, robots.txt sitemap line) is filled in **automatically** by the workflow from the Pages address. To force a specific URL, set it in `site.config.json → siteUrl` or as a repository variable `SITE_URL` (**Settings → Secrets and variables → Actions → Variables**).
+Live site: **https://al-kharafi.pages.dev** — the production URL is set in `site.config.json → siteUrl` (or a repository variable `SITE_URL`) and drives canonical URLs, hreflang, Open Graph and `sitemap.xml`.
 
-### Cloudflare Pages (free `*.pages.dev` address) — primary hosting
-Production URL: **https://al-kharafi.pages.dev** (set in `site.config.json → siteUrl`; the GitHub Pages copy also points its canonical URLs there).
+`.github/workflows/cloudflare-pages.yml` builds on every push to `main` (`npm run build:cloudflare`) and uploads `dist/al-kharafi/browser` to the Cloudflare Pages project `al-kharafi` with Wrangler. Building on GitHub means the Cloudflare account does not need access to the GitHub account.
 
-**Option A — deploy from GitHub Actions (used here; works when Cloudflare and GitHub are different accounts).**
-`.github/workflows/cloudflare-pages.yml` builds on every push to `main` and uploads with Wrangler; it creates the `al-kharafi` project on the first run.
-1. Cloudflare → **My Profile → API Tokens → Create Token → Custom token** with permission **Account → Cloudflare Pages → Edit** (for your account).
-2. Copy the **Account ID** (Cloudflare dashboard → Workers & Pages, right sidebar, or the URL `dash.cloudflare.com/<account-id>`).
-3. GitHub repo → **Settings → Secrets and variables → Actions → New repository secret**: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
-4. **Actions → Deploy to Cloudflare Pages → Run workflow** (or push to `main`).
+Required repository secrets (**Settings → Secrets and variables → Actions**):
 
-Do not also connect the repository with Git integration (Option B), or every push deploys twice.
+| Secret | Where to get it |
+|---|---|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare → **My Profile → API Tokens → Create Token → Custom**, permission **Account → Cloudflare Pages → Edit**, no IP filter |
+| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard URL `dash.cloudflare.com/<account-id>` |
 
-**Option B — Cloudflare Git integration** (only if the Cloudflare account can install its GitHub app on the repository owner). Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git**:
-1. Authorise the Cloudflare GitHub app for the `Platforms-Builder` organisation and pick `al-kharafi-website`.
-2. Project name: `al-kharafi` (this gives `al-kharafi.pages.dev` — if you choose another name, update `siteUrl`).
-3. Build settings:
-   | Setting | Value |
-   |---|---|
-   | Production branch | `main` |
-   | Framework preset | None |
-   | Build command | `npm run build:cloudflare` |
-   | Build output directory | `dist/al-kharafi/browser` |
-   | Environment variable | `NODE_VERSION` = `22.22.3` |
-4. Save and Deploy. Every push to `main` then redeploys automatically; other branches get preview URLs.
+To redeploy manually: **Actions → Deploy to Cloudflare Pages → Run workflow**. Do not also connect the repository via Cloudflare's "Connect to Git", or every push deploys twice.
 
-The build adds a `_headers` file (long cache for hashed JS/CSS/fonts, security headers). Unknown URLs are served `404.html`, which loads the app and redirects to the visitor's language. A custom domain can be added later under the project's **Custom domains** tab.
+The build adds a `_headers` file (long cache for hashed JS/CSS/fonts, security headers). Unknown URLs are served `404.html`, which loads the app and redirects to the visitor's language.
 
-### Custom domain with Cloudflare
-Example below uses `example.com`; replace it with the real domain and `<user>` with the GitHub account/organisation (here: `tap-profile`).
+### Custom domain (later)
+1. Add the domain to Cloudflare (or buy it from Cloudflare Registrar).
+2. Cloudflare → **Workers & Pages → al-kharafi → Custom domains → Set up a custom domain** (DNS records and HTTPS are created automatically).
+3. Set `site.config.json → siteUrl` to the new address (e.g. `https://www.example.com`) and push.
 
-**1. Cloudflare → DNS → Records** (start with the proxy **off / grey cloud – "DNS only"**, so GitHub can issue its certificate):
-
-| Type | Name | Content |
-|---|---|---|
-| `A` | `@` | `185.199.108.153` |
-| `A` | `@` | `185.199.109.153` |
-| `A` | `@` | `185.199.110.153` |
-| `A` | `@` | `185.199.111.153` |
-| `CNAME` | `www` | `<user>.github.io` |
-
-(Optional IPv6: `AAAA @` → `2606:50c0:8000::153`, `…8001::153`, `…8002::153`, `…8003::153`.)
-Delete any other `A`/`AAAA`/`CNAME` records for `@` and `www` first.
-
-**2. GitHub → Settings → Pages → Custom domain:** enter `www.example.com` (or `example.com`) → Save. Wait for the DNS check to pass, then tick **Enforce HTTPS** (certificate can take up to ~1 hour).
-Optional but recommended: verify the domain under your **account/org Settings → Pages → Verified domains** (adds a `TXT` record in Cloudflare) to prevent domain takeover.
-
-**3. Re-run the deploy workflow** (**Actions → Deploy to GitHub Pages → Run workflow**) so the site is rebuilt for the root of the new domain (base path `/` instead of `/<repo>/`) and the sitemap/canonical URLs use the domain.
-
-**4. Turn the Cloudflare proxy on (orange cloud)** — optional, after HTTPS works on GitHub:
-- **SSL/TLS → Overview → mode: `Full (strict)`** (never `Flexible` — it causes an endless redirect loop with GitHub's HTTPS).
-- **SSL/TLS → Edge Certificates → Always Use HTTPS: On**.
-- If you later change the custom domain on GitHub, switch the records back to grey cloud until GitHub re-issues the certificate.
-
-The site is fully static (prerendered `/ar/`, `/en/`, a root language redirect and `404.html`), so no Cloudflare Workers, Page Rules or redirects are needed.
 
 ## 4. Search engines (SEO)
 
@@ -163,7 +123,7 @@ src/app/
 ├── pages/           home page, image-credits page
 ├── shared/          icon, section heading, site image, scroll-reveal directive
 └── models/          shared TypeScript types
-scripts/postbuild.mjs   GitHub Pages extras (404.html, root redirect, robots, sitemap, CNAME, .nojekyll)
+scripts/postbuild.mjs   hosting extras (404.html, root redirect, robots, sitemap, _headers)
 ```
 
 Routing: `/ar/…` and `/en/…`. The URL is the source of truth for the language, so it is kept during navigation and on reload; the last choice is also remembered for visits to `/`.
@@ -181,13 +141,13 @@ Routing: `/ar/…` and `/en/…`. The URL is the source of truth for the languag
 | Exact map location | Currently an address search link; replace `mapUrl` with the pin from the “location” QR |
 | Confirmed list of services and descriptions | Current five categories are marked as provisional on the site |
 | Real trips (destinations, dates, durations, prices, availability) | None published → section shows “ask about upcoming trips” |
-| Real photos of company coaches and trips | Site uses credited, clearly labelled illustrative photos |
-| Website domain | Set in GitHub Pages + Cloudflare (see §3); the URL is picked up automatically by the build |
+| Real photos of company coaches and trips | Site uses credited Wikimedia Commons photos (no on-image labels) |
+| Website domain | Using the free `al-kharafi.pages.dev`; a custom domain can be added later (see §3) |
 | Email address, working hours | Not supplied — not shown |
 
 ## 7. Integrations still required
 
-- **Inquiry form delivery.** GitHub Pages has no backend, so the form currently hands the enquiry to **WhatsApp**: after validation it opens `wa.me/201029274903` (01029274903, confirmed by the company) with a pre-filled message, and the visitor presses Send in WhatsApp. A floating WhatsApp button is shown on every page. To receive enquiries automatically instead (e.g. by email or into a sheet), set `inquiryEndpoint` in `company.data.ts` — it takes priority over WhatsApp. With neither configured, the form tells the visitor that nothing was sent and offers the phone numbers. Set it to any endpoint that accepts a JSON `POST` (e.g. Formspree, Web3Forms, Getform, or a Google Apps Script web app that writes to a Google Sheet). Payload:
+- **Inquiry form delivery.** The site is static (no backend), so the form currently hands the enquiry to **WhatsApp**: after validation it opens `wa.me/201029274903` (01029274903, confirmed by the company) with a pre-filled message, and the visitor presses Send in WhatsApp. A floating WhatsApp button is shown on every page. To receive enquiries automatically instead (e.g. by email or into a sheet), set `inquiryEndpoint` in `company.data.ts` — it takes priority over WhatsApp. With neither configured, the form tells the visitor that nothing was sent and offers the phone numbers. Set it to any endpoint that accepts a JSON `POST` (e.g. Formspree, Web3Forms, Getform, or a Google Apps Script web app that writes to a Google Sheet). Payload:
   ```json
   { "fullName": "", "phone": "", "service": "group-transport", "destination": "",
     "travelers": 1, "preferredDate": "2027-01-15", "message": "", "lang": "ar" }
@@ -197,4 +157,4 @@ Routing: `/ar/…` and `/en/…`. The URL is the source of truth for the languag
 
 ## 8. Image credits
 
-Illustrative photos come from Wikimedia Commons under CC BY / CC BY-SA licences. Each one is labelled “Illustrative photo” on the site, attributed in the lightbox, and listed on the `/credits` page. They do **not** show Al-Kharafi vehicles or trips; replace them with the company's own photos when available.
+Illustrative photos come from Wikimedia Commons under CC BY / CC BY-SA licences. They are attributed in the gallery lightbox and listed on the `/credits` page (linked in the footer) — keep both, the licences require attribution. Replace them with the company's own photos when available.

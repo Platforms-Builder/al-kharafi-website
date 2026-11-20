@@ -13,7 +13,7 @@ import { SiteImageComponent } from '../../shared/site-image.component';
   template: `
     @let t = i18n.t();
     <section class="section why" aria-labelledby="why-title">
-      <app-site-image class="bg" key="road-sunset" sizes="100vw" [decorative]="true" [showBadge]="false" />
+      <app-site-image class="bg" key="road-sunset" sizes="100vw" [decorative]="true" />
       <div class="container">
         <app-section-heading [eyebrow]="t.why.eyebrow" [title]="t.why.title" [intro]="t.why.intro"
           headingId="why-title" tone="light" align="center" />

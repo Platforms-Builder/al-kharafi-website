@@ -21,7 +21,10 @@ type Filter = 'all' | GalleryCategory;
 })
 export class GalleryComponent {
   protected readonly i18n = inject(LanguageService);
-  protected readonly filters: Filter[] = ['all', 'transport', 'destinations', 'company-trips'];
+  /** Only categories that have photos are offered (e.g. 'company-trips' appears once such photos are added). */
+  protected readonly filters: Filter[] = (['all', 'transport', 'destinations', 'company-trips'] as Filter[]).filter(
+    (f) => f === 'all' || GALLERY.some((g) => g.category === f),
+  );
   protected readonly filter = signal<Filter>('all');
   protected readonly items = computed(() =>
     GALLERY.filter((g) => this.filter() === 'all' || g.category === this.filter()),

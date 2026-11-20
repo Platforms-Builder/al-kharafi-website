@@ -40,7 +40,6 @@ import { SiteImageComponent } from '../../shared/site-image.component';
           }
         </ul>
 
-        <p class="note"><app-icon name="info" [size]="18" /> {{ t.services.proposedNote }}</p>
       </div>
     </section>
   `,
@@ -66,11 +65,6 @@ import { SiteImageComponent } from '../../shared/site-image.component';
     .card-note {
       flex: 0; display: flex; align-items: center; gap: .4rem; margin-top: -.5rem;
       color: #1f7a4d; font-weight: 700; font-size: .88rem;
-    }
-    .note {
-      display: flex; align-items: flex-start; gap: .5rem; max-width: 48rem; margin: 2.5rem auto 0; padding: .9rem 1.1rem;
-      border-radius: var(--radius); background: #fff; border: 1px dashed var(--gold); color: var(--text-muted); font-size: .92rem;
-      app-icon { color: var(--gold-ink); margin-top: .2rem; }
     }
     @media (max-width: 1100px) { .cards { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) { .cards { grid-template-columns: 1fr; } }

@@ -1,4 +1,4 @@
-// Post-build step for static hosting (GitHub Pages).
+// Post-build step for static hosting (Cloudflare Pages).
 // Usage: node scripts/postbuild.mjs   (after `ng build`)
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -93,4 +93,4 @@ if (siteUrl && !/\.(github\.io|pages\.dev)$/.test(new URL(siteUrl).hostname)) {
   writeFileSync(join(out, 'CNAME'), new URL(siteUrl).hostname + '\n');
 }
 
-console.log('✔ GitHub Pages post-build complete:', out);
+console.log('✔ Post-build complete:', out);

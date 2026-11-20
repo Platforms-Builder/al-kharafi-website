@@ -6,7 +6,7 @@ export const en: Translation = {
     homeDescription:
       'Al-Kharafi — Tourism Investment, Land Transport & Trips, based in Sohag, Egypt. Contact us about land transportation, organized trips and group transport.',
     creditsTitle: 'Image Credits | Al-Kharafi',
-    creditsDescription: 'Sources and licences of the illustrative photographs used on the Al-Kharafi website.',
+    creditsDescription: 'Sources and licences of the photographs used on the Al-Kharafi website.',
     ogLocale: 'en_US',
   },
   a11y: {
@@ -35,8 +35,6 @@ export const en: Translation = {
   },
   langSwitch: { label: 'العربية', short: 'ع' },
   common: {
-    illustrative: 'Illustrative photo',
-    illustrativeLong: 'Licensed illustrative photo — not a company vehicle or trip',
     inquire: 'Enquire now',
     callUs: 'Call us',
     sample: 'Sample content',
@@ -67,15 +65,14 @@ export const en: Translation = {
     eyebrow: 'What we offer',
     title: 'Our Services',
     intro: 'Service areas you can ask Al-Kharafi about. For exact details and pricing, please contact our team directly.',
-    proposedNote: 'Service details are provisional and will be updated to match the company’s confirmed service list.',
     cardCta: 'Ask about this service',
   },
   trips: {
     eyebrow: 'Find your destination',
     title: 'Trips & Destinations',
-    intro: 'Trips and their details are announced here once confirmed. You can always ask us about upcoming trips.',
-    emptyTitle: 'Upcoming trips are being prepared',
-    emptyBody: 'No trip dates have been published yet. Contact us to hear about available and upcoming trips, or to arrange a trip for your group.',
+    intro: 'Our trips and dates are announced here. You can always ask us about upcoming trips or arrange a private trip for your group.',
+    emptyTitle: 'Ask about our upcoming trips',
+    emptyBody: 'Contact us to hear about available and upcoming trips, or to arrange a private trip for your group.',
     emptyCta: 'Ask about upcoming trips',
     sampleBanner: 'Development mode: the cards below are sample data for design testing only and are not shown in the published site.',
     samplePrice: 'Sample price',
@@ -107,10 +104,10 @@ export const en: Translation = {
   gallery: {
     eyebrow: 'Moments',
     title: 'Gallery',
-    intro: 'The current photos are licensed illustrative images of roads and destinations. Photos of the company’s own coaches and trips will be added soon.',
+    intro: 'Glimpses of the roads and destinations we travel to across Egypt.',
     filters: { all: 'All', transport: 'Roads & transport', destinations: 'Destinations', 'company-trips': 'Company trips' },
     filterLabel: 'Filter photos',
-    emptyCompany: 'Photos of the company’s own trips will be added here soon.',
+    emptyCompany: 'No photos in this category.',
     credit: 'Source:',
     of: 'of',
   },
@@ -201,7 +198,7 @@ export const en: Translation = {
   },
   credits: {
     title: 'Image Credits',
-    intro: 'The photos currently shown on this site are licensed illustrative images from Wikimedia Commons. They do not show Al-Kharafi vehicles or trips. With thanks to their authors, the source and licence of each image are listed below.',
+    intro: 'Some photos on this site are licensed from Wikimedia Commons. With thanks to their authors, the source and licence of each image are listed below.',
     image: 'Image',
     author: 'Author',
     license: 'Licence',
